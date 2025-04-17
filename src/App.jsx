@@ -14,7 +14,7 @@ const data = {
 
 const AIRTABLE_BASE_ID = 'appZXtCuTGK6a6aws';
 const AIRTABLE_API_KEY = 'patK7bUG61aWlDKPs.07db5c4bae2ac05b0ed4c923e73026ae6f8af87e50c9c0d39bc8926be55c2a91';
-const AIRTABLE_TABLE_NAME = 'Presentielijsten';
+const AIRTABLE_TABLE_NAME = 'Renzo Choreo int/adv';
 
 export default function App() {
   const [selectedCourse, setSelectedCourse] = useState("Renzo Choreo int/adv");
