@@ -1,79 +1,69 @@
 import { useState, useEffect } from 'react';
 
+const AIRTABLE_BASE_ID = "appWwMDCKHXWWvvDo";
+const AIRTABLE_TABLE_NAME = "Presentielijst";
+const AIRTABLE_API_KEY = "patdrGdjfFcgheSrE.f0ca83205db927a98ff1b2d7466a00000e77d6dbc5c711e159da5824d4fd6565";
+
 const data = {
   "Isabel Commercial Beginner": ["Guusje S.", "Jairo S.", "Kim N.", "Kyra K.", "Lotte S.", "Maartje G.", "Pleun L.", "Renske P.", "Tirosmara R."],
   "Jason UC": ["Adia L.", "Esmée Z.", "Guusje S.", "Jairo S.", "Julia S.", "Kim N.", "Klara V.", "Lotte S.", "Renske P."],
   "Mark Commercial": ["Alicia A.", "Brandon D.", "Brittany S.", "David G.", "Elise H.", "Julia M.", "Maud W.", "Merijn B.", "Sayf E.", "Timothy B.", "Zoe V."],
   "Mark Hiphop": ["Brandon D.", "David G.", "Esmée Z.", "Julie H.", "Klara V.", "Lianne H.", "Muni O.", "Sanne O.", "Skye K.", "Timothy B."],
-  "Merle & Charlie Dancehall": ["Aaliyah G.", "Alizya D.", "Anaïs P.", "Bloem K.", "Cherise J.", "Dunya R.", "Julia M.", "Julia S.", "Maud W",
-                                  "Merijn B.", "Robin S.", "Sayf E.", "Tosca S.", "Yasmine B.", "Zoe J.", "Zoe V."],
-  "Renzo Choreo Adv+": ["Adinda M.", "Ayla C.", "Brandon D.", "Carmen R.", "Florien P.", "Iliana M.", "Indy S.", "Jade D.", "Jayne-Elja M.",
-                          "Lianne H.", "Lisette H.", "Lynn L.", "Nienke B.", "Rianne C.", "Robin S.", "Sanne T.", "Sara M.", "Tatum G.",
-                          "Tosca S.", "Zuzanna P."],
-  "Renzo Choreo int/adv": ["Aaliyah G.", "Alizya D.", "Gala J.", "Grace L.", "Lauryn B.", "Miriam B.", "Odunayo A.", "Patrick L.",
-                             "Sammie J.", "Tatum G.", "Thanh T.", "Thijs V."],
-  "Valery Hiphop Adv+": ["Brandon D.", "Indy S.", "Jade D.", "Jayne-Elja M.", "Lianne H.", "Lisette H.", "Lynn L.", "Nienke B.",
-                           "Robin S.", "Sara M.", "Tosca S.", "Zuzanna P."],
-  "Valery Hiphop int/adv": ["Aaliyah G.", "Alicia A.", "Alizya D.", "Gala J.", "Grace L.", "Joshua I.", "Lauryn B.", "Miriam B.",
-                              "Patrick L.", "Thanh T.", "Thijs V.", "Zoe V."]
+  "Merle & Charlie Dancehall": ["Aaliyah G.", "Alizya D.", "Anaïs P.", "Bloem K.", "Cherise J.", "Dunya R.", "Julia M.", "Julia S.", "Maud W.", "Merijn B.", "Robin S.", "Sayf E.", "Tosca S.", "Yasmine B.", "Zoe J.", "Zoe V."],
+  "Renzo Choreo Adv+": ["Adinda M.", "Ayla C.", "Brandon D.", "Carmen R.", "Florien P.", "Iliana M.", "Indy S.", "Jade D.", "Jayne-Elja M.", "Lianne H.", "Lisette H.", "Lynn L.", "Nienke B.", "Rianne C.", "Robin S.", "Sanne T.", "Sara M.", "Tatum G.", "Tosca S.", "Zuzanna P."],
+  "Renzo Choreo int/adv": ["Aaliyah G.", "Alizya D.", "Gala J.", "Grace L.", "Lauryn B.", "Miriam B.", "Odunayo A.", "Patrick L.", "Sammie J.", "Tatum G.", "Thanh T.", "Thijs V."],
+  "Valery Hiphop Adv+": ["Brandon D.", "Indy S.", "Jade D.", "Jayne-Elja M.", "Lianne H.", "Lisette H.", "Lynn L.", "Nienke B.", "Robin S.", "Sara M.", "Tosca S.", "Zuzanna P."],
+  "Valery Hiphop int/adv": ["Aaliyah G.", "Alicia A.", "Alizya D.", "Gala J.", "Grace L.", "Joshua I.", "Lauryn B.", "Miriam B.", "Patrick L.", "Thanh T.", "Thijs V.", "Zoe V."]
 };
-
-const AIRTABLE_BASE_ID = 'appWwMDCKHXWWvvDo';
-const AIRTABLE_API_KEY = 'patdrGdjfFcgheSrE.f0ca83205db927a98ff1b2d7466a00000e77d6dbc5c711e159da5824d4fd6565';
-const AIRTABLE_TABLE_NAME = 'Presentielijst';
 
 export default function App() {
   const [selectedCourse, setSelectedCourse] = useState("Renzo Choreo int/adv");
   const [presence, setPresence] = useState({});
 
   useEffect(() => {
-    const stored = localStorage.getItem('presentie');
-    if (stored) {
-      setPresence(JSON.parse(stored));
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('presentie', JSON.stringify(presence));
-  }, [presence]);
-
-  const updateAirtable = async (student, week, checked) => {
-    const response = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}?filterByFormula=AND({Cursus}='${selectedCourse}', {Leerling kort}='${student}')`, {
+    fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}?view=Grid%20view`, {
       headers: {
         Authorization: `Bearer ${AIRTABLE_API_KEY}`
       }
-    });
-    const data = await response.json();
-    const record = data.records[0];
-
-    if (record) {
-      await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}/${record.id}`, {
-        method: 'PATCH',
-        headers: {
-          Authorization: `Bearer ${AIRTABLE_API_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          fields: {
-            [week]: checked ? '✅' : '⬜️'
-          }
-        })
+    })
+      .then((res) => res.json())
+      .then((result) => {
+        const db = {};
+        result.records.forEach((rec) => {
+          db[rec.fields["Leerling kort"]] = {
+            id: rec.id,
+            ...rec.fields
+          };
+        });
+        setPresence(db);
       });
-    }
-  };
+  }, []);
 
   const togglePresence = (name, week) => {
-    const newValue = !presence[name]?.[week];
-    setPresence((prev) => {
-      const updated = {
+    const record = presence[name];
+    if (!record) return;
+
+    const newValue = !record[week];
+
+    fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}/${record.id}`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${AIRTABLE_API_KEY}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        fields: {
+          [week]: newValue
+        }
+      })
+    }).then(() => {
+      setPresence((prev) => ({
         ...prev,
         [name]: {
           ...prev[name],
           [week]: newValue
         }
-      };
-      updateAirtable(name, week, newValue);
-      return updated;
+      }));
     });
   };
 
