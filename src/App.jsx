@@ -39,7 +39,7 @@ export default function App() {
   };
 
   return (
-    <div style={{ padding: 20, maxWidth: 800, margin: '0 auto' }}>
+    <div style={{ padding: 20, maxWidth: 900, margin: '0 auto' }}>
       <select
         value={selectedCourse}
         onChange={(e) => setSelectedCourse(e.target.value)}
@@ -53,38 +53,32 @@ export default function App() {
       </select>
 
       <div style={{ border: '1px solid #ddd', padding: 20, borderRadius: 10 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
-          <span style={{ width: '150px' }}></span>
-          <div style={{ display: 'flex', gap: 10 }}>
-            {[...Array(8)].map((_, i) => (
-              <span key={`label-${i}`} style={{ fontWeight: 'bold' }}>{`WK${i + 1}`}</span>
-            ))}
-          </div>
-        </div>
-
-        {data[selectedCourse].map((student) => (
-          <div
-            key={student}
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: 10
-            }}
-          >
-            <span style={{ width: '150px' }}>{student}</span>
-            <div style={{ display: 'flex', gap: 10 }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+          <thead>
+            <tr>
+              <th style={{ textAlign: 'left' }}>Leerling</th>
               {[...Array(8)].map((_, i) => (
-                <input
-                  key={i}
-                  type="checkbox"
-                  checked={presence[student]?.[`WK${i + 1}`] || false}
-                  onChange={() => togglePresence(student, `WK${i + 1}`)}
-                />
+                <th key={`wk-label-${i}`} style={{ textAlign: 'center' }}>{`WK${i + 1}`}</th>
               ))}
-            </div>
-          </div>
-        ))}
+            </tr>
+          </thead>
+          <tbody>
+            {data[selectedCourse].map((student) => (
+              <tr key={student}>
+                <td>{student}</td>
+                {[...Array(8)].map((_, i) => (
+                  <td key={i} style={{ textAlign: 'center' }}>
+                    <input
+                      type="checkbox"
+                      checked={presence[student]?.[`WK${i + 1}`] || false}
+                      onChange={() => togglePresence(student, `WK${i + 1}`)}
+                    />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
