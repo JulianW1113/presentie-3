@@ -21,7 +21,7 @@ export default function App() {
   const [presence, setPresence] = useState({});
 
   useEffect(() => {
-    fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}?view=Grid%20view`, {
+    fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}?view=Presentielijst`, {
       headers: {
         Authorization: `Bearer ${AIRTABLE_API_KEY}`
       }
@@ -30,12 +30,10 @@ export default function App() {
       .then((result) => {
         const db = {};
         result.records.forEach((rec) => {
-          if (rec.fields["Leerling kort"]) {
-            db[rec.fields["Leerling kort"]] = {
-              id: rec.id,
-              ...rec.fields
-            };
-          }
+          db[rec.fields["Leerling kort"]] = {
+            id: rec.id,
+            ...rec.fields
+          };
         });
         setPresence(db);
       });
@@ -85,7 +83,7 @@ export default function App() {
 
       <div style={{ border: '1px solid #ddd', padding: 20, borderRadius: 10 }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr repeat(8, 1fr)', gap: 10, marginBottom: 10, fontWeight: 'bold', textAlign: 'center' }}>
-          <span>Leerling</span>
+          <span></span>
           {[...Array(8)].map((_, i) => (
             <span key={`label-${i}`}>{`WK${i + 1}`}</span>
           ))}
