@@ -53,11 +53,13 @@ export default function App() {
       </select>
 
       <div style={{ border: '1px solid #ddd', padding: 20, borderRadius: 10 }}>
-        {/* Header met weeknummers */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginBottom: 10, fontWeight: 'bold' }}>
-          {[...Array(8)].map((_, i) => (
-            <span key={`label-${i}`}>{`WK${i + 1}`}</span>
-          ))}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+          <span style={{ width: '150px' }}></span>
+          <div style={{ display: 'flex', gap: 10 }}>
+            {[...Array(8)].map((_, i) => (
+              <span key={`label-${i}`} style={{ fontWeight: 'bold' }}>{`WK${i + 1}`}</span>
+            ))}
+          </div>
         </div>
 
         {data[selectedCourse].map((student) => (
@@ -70,7 +72,7 @@ export default function App() {
               marginBottom: 10
             }}
           >
-            <span>{student}</span>
+            <span style={{ width: '150px' }}>{student}</span>
             <div style={{ display: 'flex', gap: 10 }}>
               {[...Array(8)].map((_, i) => (
                 <input
@@ -86,7 +88,4 @@ export default function App() {
       </div>
     </div>
   );
-}
-    }
-  ]
 }
