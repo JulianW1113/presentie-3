@@ -16,7 +16,6 @@ export default function App() {
   const [selectedCourse, setSelectedCourse] = useState("Renzo Choreo int/adv");
   const [presence, setPresence] = useState({});
 
-  // 👉 Laad opgeslagen data uit localStorage
   useEffect(() => {
     const stored = localStorage.getItem('presentie');
     if (stored) {
@@ -24,7 +23,6 @@ export default function App() {
     }
   }, []);
 
-  // 👉 Sla nieuwe wijzigingen op
   useEffect(() => {
     localStorage.setItem('presentie', JSON.stringify(presence));
   }, [presence]);
@@ -55,6 +53,13 @@ export default function App() {
       </select>
 
       <div style={{ border: '1px solid #ddd', padding: 20, borderRadius: 10 }}>
+        {/* Header met weeknummers */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginBottom: 10, fontWeight: 'bold' }}>
+          {[...Array(8)].map((_, i) => (
+            <span key={`label-${i}`}>{`WK${i + 1}`}</span>
+          ))}
+        </div>
+
         {data[selectedCourse].map((student) => (
           <div
             key={student}
@@ -81,4 +86,7 @@ export default function App() {
       </div>
     </div>
   );
+}
+    }
+  ]
 }
