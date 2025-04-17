@@ -1,5 +1,8 @@
-
 import { useState } from 'react';
+
+const AIRTABLE_TOKEN = "patK7bUG61aWlDKPs.eb6c50a76b14e38793593be03aab3e2ecb7390d33e5670463ccb2d4299cc905d";
+const BASE_ID = "app"; // <-- Vul hier je echte Base ID in
+const TABLE_NAME = "Imported table"; // Tabelnaam uit Airtable
 
 const data = {
   "Isabel Commercial Beginner": ["Guusje S.", "Jairo S.", "Kim N.", "Kyra K.", "Lotte S.", "Maartje G.", "Pleun L.", "Renske P.", "Tirosmara R."],
@@ -17,14 +20,39 @@ export default function App() {
   const [selectedCourse, setSelectedCourse] = useState("Renzo Choreo int/adv");
   const [presence, setPresence] = useState({});
 
-  const togglePresence = (name, week) => {
+  const togglePresence = async (name, week) => {
+    const newValue = !presence[name]?.[week];
     setPresence((prev) => ({
       ...prev,
       [name]: {
         ...prev[name],
-        [week]: !prev[name]?.[week]
+        [week]: newValue
       }
     }));
+
+    // Update in Airtable
+    try {
+      await fetch(`https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${AIRTABLE_TOKEN}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          records: [
+            {
+              fields: {
+                "Leerling kort": name,
+                "Cursus": selectedCourse,
+                [week]: newValue
+              }
+            }
+          ]
+        })
+      });
+    } catch (err) {
+      console.error("Fout bij opslaan in Airtable", err);
+    }
   };
 
   return (
