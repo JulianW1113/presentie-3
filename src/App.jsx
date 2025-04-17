@@ -2,35 +2,19 @@
 import { useState } from 'react';
 
 const data = {
-  'Renzo Choreo int/adv': [
-    'Gala J.',
-    'Sammie J.',
-    'Tatum G.',
-    'Aaliyah G.',
-    'Aliyza D.',
-    'Odunayo A.',
-    'Thanh T.',
-    'Miriam B.',
-    'Thijs V.',
-    'Grace L.',
-    'Lauryn B.',
-    'Patrick L.'
-  ],
-  'Isabel Commercial Beginner': [
-    'Guusje S.',
-    'Tiromsara R.',
-    'Kim N.',
-    'Maartje V.',
-    'Kyra K.',
-    'Renske P.',
-    'Pleun V.',
-    'Jairo S.',
-    'Lotte S.'
-  ]
+  "Isabel Commercial Beginner": ["Guusje S.", "Jairo S.", "Kim N.", "Kyra K.", "Lotte S.", "Maartje G.", "Pleun L.", "Renske P.", "Tirosmara R."],
+  "Jason UC": ["Adia L.", "Esmée Z.", "Guusje S.", "Jairo S.", "Julia S.", "Kim N.", "Klara V.", "Lotte S.", "Renske P."],
+  "Mark Commercial": ["Alicia A.", "Brandon D.", "Brittany S.", "David G.", "Elise H.", "Julia M.", "Maud W.", "Merijn B.", "Sayf E.", "Timothy B.", "Zoe V."],
+  "Mark Hiphop": ["Brandon D.", "David G.", "Esmée Z.", "Julie H.", "Klara V.", "Lianne H.", "Muni O.", "Sanne O.", "Skye K.", "Timothy B."],
+  "Merle & Charlie Dancehall": ["Aaliyah G.", "Alizya D.", "Anaïs P.", "Bloem K.", "Cherise J.", "Dunya R.", "Julia M.", "Julia S.", "Maud W.", "Merijn B.", "Robin S.", "Sayf E.", "Tosca S.", "Yasmine B.", "Zoe J.", "Zoe V."],
+  "Renzo Choreo Adv+": ["Adinda M.", "Ayla C.", "Brandon D.", "Carmen R.", "Florien P.", "Iliana M.", "Indy S.", "Jade D.", "Jayne-Elja M.", "Lianne H.", "Lisette H.", "Lynn L.", "Nienke B.", "Rianne C.", "Robin S.", "Sanne T.", "Sara M.", "Tatum G.", "Tosca S.", "Zuzanna P."],
+  "Renzo Choreo int/adv": ["Aaliyah G.", "Alizya D.", "Gala J.", "Grace L.", "Lauryn B.", "Miriam B.", "Odunayo A.", "Patrick L.", "Sammie J.", "Tatum G.", "Thanh T.", "Thijs V."],
+  "Valery Hiphop Adv+": ["Brandon D.", "Indy S.", "Jade D.", "Jayne-Elja M.", "Lianne H.", "Lisette H.", "Lynn L.", "Nienke B.", "Robin S.", "Sara M.", "Tosca S.", "Zuzanna P."],
+  "Valery Hiphop int/adv": ["Aaliyah G.", "Alicia A.", "Alizya D.", "Gala J.", "Grace L.", "Joshua I.", "Lauryn B.", "Miriam B.", "Patrick L.", "Thanh T.", "Thijs V.", "Zoe V."]
 };
 
 export default function App() {
-  const [selectedCourse, setSelectedCourse] = useState('Renzo Choreo int/adv');
+  const [selectedCourse, setSelectedCourse] = useState("Renzo Choreo int/adv");
   const [presence, setPresence] = useState({});
 
   const togglePresence = (name, week) => {
