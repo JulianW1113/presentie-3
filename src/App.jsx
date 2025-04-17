@@ -27,19 +27,54 @@ export default function App() {
     localStorage.setItem('presentie', JSON.stringify(presence));
   }, [presence]);
 
+  const updateAirtable = async (student, course, week, value) => {
+    const token = "patK7bUG61aWlDKPs.07db5c4bae2ac05b0ed4c923e73026ae6f8af87e50c9c0d39bc8926be55c2a91";
+    const baseId = "appZXtCuTGK6a6aws";
+    const tableName = "Imported table";
+
+    const filterFormula = `AND({Leerling kort}='${student}', {Choreograaf}='${course}')`;
+
+    const res = await fetch(`https://api.airtable.com/v0/${baseId}/${tableName}?filterByFormula=${encodeURIComponent(filterFormula)}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+    const data = await res.json();
+    const recordId = data.records?.[0]?.id;
+
+    if (recordId) {
+      await fetch(`https://api.airtable.com/v0/${baseId}/${tableName}/${recordId}`, {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          fields: {
+            [week]: value
+          }
+        })
+      });
+    }
+  };
+
   const togglePresence = (name, week) => {
     const newValue = !presence[name]?.[week];
-    setPresence((prev) => ({
-      ...prev,
-      [name]: {
-        ...prev[name],
-        [week]: newValue
-      }
-    }));
+    setPresence((prev) => {
+      const updated = {
+        ...prev,
+        [name]: {
+          ...prev[name],
+          [week]: newValue
+        }
+      };
+      updateAirtable(name, selectedCourse, week, newValue);
+      return updated;
+    });
   };
 
   return (
-    <div style={{ padding: 20, maxWidth: 900, margin: '0 auto' }}>
+    <div style={{ padding: 20, maxWidth: 800, margin: '0 auto' }}>
       <select
         value={selectedCourse}
         onChange={(e) => setSelectedCourse(e.target.value)}
@@ -53,32 +88,36 @@ export default function App() {
       </select>
 
       <div style={{ border: '1px solid #ddd', padding: 20, borderRadius: 10 }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr>
-              <th style={{ textAlign: 'left' }}>Leerling</th>
+        {/* Header met weeknummers */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginBottom: 10, fontWeight: 'bold' }}>
+          {[...Array(8)].map((_, i) => (
+            <span key={`label-${i}`}>{`WK${i + 1}`}</span>
+          ))}
+        </div>
+
+        {data[selectedCourse].map((student) => (
+          <div
+            key={student}
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: 10
+            }}
+          >
+            <span>{student}</span>
+            <div style={{ display: 'flex', gap: 10 }}>
               {[...Array(8)].map((_, i) => (
-                <th key={`wk-label-${i}`} style={{ textAlign: 'center' }}>{`WK${i + 1}`}</th>
+                <input
+                  key={i}
+                  type="checkbox"
+                  checked={presence[student]?.[`WK${i + 1}`] || false}
+                  onChange={() => togglePresence(student, `WK${i + 1}`)}
+                />
               ))}
-            </tr>
-          </thead>
-          <tbody>
-            {data[selectedCourse].map((student) => (
-              <tr key={student}>
-                <td>{student}</td>
-                {[...Array(8)].map((_, i) => (
-                  <td key={i} style={{ textAlign: 'center' }}>
-                    <input
-                      type="checkbox"
-                      checked={presence[student]?.[`WK${i + 1}`] || false}
-                      onChange={() => togglePresence(student, `WK${i + 1}`)}
-                    />
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
