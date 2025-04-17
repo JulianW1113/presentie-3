@@ -12,6 +12,10 @@ const data = {
   "Valery Hiphop int/adv": ["Aaliyah G.", "Alicia A.", "Alizya D.", "Gala J.", "Grace L.", "Joshua I.", "Lauryn B.", "Miriam B.", "Patrick L.", "Thanh T.", "Thijs V.", "Zoe V."]
 };
 
+const AIRTABLE_BASE_ID = 'appZXtCuTGK6a6aws';
+const AIRTABLE_API_KEY = 'patK7bUG61aWlDKPs.07db5c4bae2ac05b0ed4c923e73026ae6f8af87e50c9c0d39bc8926be55c2a91';
+const AIRTABLE_TABLE_NAME = 'Presentielijsten';
+
 export default function App() {
   const [selectedCourse, setSelectedCourse] = useState("Renzo Choreo int/adv");
   const [presence, setPresence] = useState({});
@@ -27,31 +31,31 @@ export default function App() {
     localStorage.setItem('presentie', JSON.stringify(presence));
   }, [presence]);
 
-  const updateAirtable = async (student, course, week, value) => {
-    const token = "patK7bUG61aWlDKPs.07db5c4bae2ac05b0ed4c923e73026ae6f8af87e50c9c0d39bc8926be55c2a91";
-    const baseId = "appZXtCuTGK6a6aws";
-    const tableName = "Imported table";
+  const updateAirtable = async (student, week, checked) => {
+    const recordName = student; // Assumes 'Leerling kort' matches exactly
+    const field = week;
 
-    const filterFormula = `AND({Leerling kort}='${student}', {Choreograaf}='${course}')`;
-
-    const res = await fetch(`https://api.airtable.com/v0/${baseId}/${tableName}?filterByFormula=${encodeURIComponent(filterFormula)}`, {
+    const response = await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}`, {
       headers: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${AIRTABLE_API_KEY}`
       }
     });
-    const data = await res.json();
-    const recordId = data.records?.[0]?.id;
+    const data = await response.json();
 
-    if (recordId) {
-      await fetch(`https://api.airtable.com/v0/${baseId}/${tableName}/${recordId}`, {
-        method: "PATCH",
+    const record = data.records.find(
+      (r) => r.fields['Leerling kort'] === recordName && r.fields['Cursus'] === selectedCourse
+    );
+
+    if (record) {
+      await fetch(`https://api.airtable.com/v0/${AIRTABLE_BASE_ID}/${AIRTABLE_TABLE_NAME}/${record.id}`, {
+        method: 'PATCH',
         headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
+          Authorization: `Bearer ${AIRTABLE_API_KEY}`,
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           fields: {
-            [week]: value
+            [field]: checked
           }
         })
       });
@@ -68,7 +72,7 @@ export default function App() {
           [week]: newValue
         }
       };
-      updateAirtable(name, selectedCourse, week, newValue);
+      updateAirtable(name, week, newValue);
       return updated;
     });
   };
@@ -88,8 +92,8 @@ export default function App() {
       </select>
 
       <div style={{ border: '1px solid #ddd', padding: 20, borderRadius: 10 }}>
-        {/* Header met weeknummers */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginBottom: 10, fontWeight: 'bold' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr repeat(8, 1fr)', gap: 10, marginBottom: 10, fontWeight: 'bold', textAlign: 'center' }}>
+          <span></span>
           {[...Array(8)].map((_, i) => (
             <span key={`label-${i}`}>{`WK${i + 1}`}</span>
           ))}
@@ -99,23 +103,22 @@ export default function App() {
           <div
             key={student}
             style={{
-              display: 'flex',
-              justifyContent: 'space-between',
+              display: 'grid',
+              gridTemplateColumns: '1fr repeat(8, 1fr)',
+              gap: 10,
               alignItems: 'center',
               marginBottom: 10
             }}
           >
             <span>{student}</span>
-            <div style={{ display: 'flex', gap: 10 }}>
-              {[...Array(8)].map((_, i) => (
-                <input
-                  key={i}
-                  type="checkbox"
-                  checked={presence[student]?.[`WK${i + 1}`] || false}
-                  onChange={() => togglePresence(student, `WK${i + 1}`)}
-                />
-              ))}
-            </div>
+            {[...Array(8)].map((_, i) => (
+              <input
+                key={i}
+                type="checkbox"
+                checked={presence[student]?.[`WK${i + 1}`] || false}
+                onChange={() => togglePresence(student, `WK${i + 1}`)}
+              />
+            ))}
           </div>
         ))}
       </div>
